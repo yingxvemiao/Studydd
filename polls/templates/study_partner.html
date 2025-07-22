@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学习伙伴匹配</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #4cc9f0;
+            --light: #f8f9ff;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --danger: #f44336;
+            --text-dark: #2b2d42;
+            --text-light: #8d99ae;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', 'PingFang SC', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #e0f7fa 0%, #f3e5f5 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text-dark);
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            color: var(--secondary);
+            margin-bottom: 15px;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: none;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            margin-bottom: 30px;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 600;
+            padding: 20px;
+        }
+        
+        .partner-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px;
+            background: white;
+        }
+        
+        .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e0e7ff 0%, #d6e4ff 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            border: 4px solid var(--light);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.2);
+        }
+        
+        .avatar i {
+            font-size: 3.5rem;
+            color: var(--primary);
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            width: 100%;
+            max-width: 500px;
+            margin-top: 20px;
+        }
+        
+        .info-item {
+            background: var(--light);
+            padding: 15px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .info-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        
+        .match-section {
+            padding: 30px;
+            background: white;
+        }
+        
+        .match-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        @media (max-width: 576px) {
+            .match-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .match-card {
+            background: var(--light);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .match-type {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+        
+        .match-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .match-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+        
+        .progress {
+            height: 10px;
+            border-radius: 5px;
+            margin-top: 15px;
+            background: #e0e7ff;
+        }
+        
+        .progress-bar {
+            border-radius: 5px;
+        }
+        
+        .match-explanation {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-top: 10px;
+            text-align: left;
+        }
+        
+        .total-match {
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            color: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .total-label {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .total-value {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .match-stars {
+            font-size: 2rem;
+            color: gold;
+            margin: 15px 0;
+        }
+        
+        .match-description {
+            font-size: 1.1rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            box-shadow: 0 6px 15px rgba(67, 97, 238, 0.35);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(67, 97, 238, 0.45);
+        }
+        
+        .match-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .match-detail {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .match-detail i {
+            color: var(--primary);
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-handshake"></i> 学习伙伴匹配</h1>
+            <p class="subtitle">基于学习风格、地点偏好和MBTI人格的智能匹配系统</p>
+        </header>
+        
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-user-friends"></i> 为您匹配的学习伙伴
+            </div>
+            
+            <div class="partner-info">
+                <div class="avatar">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                
+                <!-- 动态显示匹配伙伴信息 -->
+                <h2 class="partner-name">{{ partner.stu_name }}</h2>
+                <p class="partner-email">{{ partner.email }}</p>
+                
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">性别</span>
+                        <span class="info-value">{{ partner.stu_gender }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">MBTI人格</span>
+                        <span class="info-value">{{ partner.stu_mbti }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">邮箱</span>
+                        <span class="info-value">{{ partner.stu_email }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">积分</span>
+                        <span class="info-value">{{ partner.stu_score }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-chart-pie"></i> 匹配度分析
+            </div>
+            
+            <div class="match-section">
+                <div class="match-grid">
+                    <div class="match-card">
+                        <div class="match-icon">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <div class="match-type">学习风格匹配度</div>
+                        <div class="match-value">{{ style_match }}</div>
+                        <div class="match-label">20个特征中匹配{{ style_match_count }}个</div>
+                        <div class="progress">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: {{ style_match }}" aria-valuenow="{{ style_match }}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <div class="match-explanation">
+                            <div class="match-detail">
+                                <i class="fas fa-check-circle"></i> 时间管理：高度一致
+                            </div>
+                            <div class="match-detail">
+                                <i class="fas fa-check-circle"></i> 学习节奏：中等匹配
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="match-card">
+                        <div class="match-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="match-type">学习地点匹配度</div>
+                        <div class="match-value">{{ location_match }}</div>
+                        <div class="match-label">距离差仅{{ location_diff }}个单位</div>
+                        <div class="progress">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: {{ location_match }}" aria-valuenow="{{ location_match }}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <div class="match-explanation">
+                            <div class="match-detail">
+                                <i class="fas fa-check-circle"></i> 偏好地点：高度一致
+                            </div>
+                            <div class="match-detail">
+                                <i class="fas fa-check-circle"></i> 学习环境：高度一致
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="match-card">
+                        <div class="match-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div class="match-type">MBTI匹配度</div>
+                        <div class="match-value">{{ mbti_match }}</div>
+                        <div class="match-label">4个维度中匹配{{ mbti_match_count }}个</div>
+                        <div class="progress">
+                            <div class="progress-bar bg-warning" role="progressbar" style="width: {{ mbti_match }}" aria-valuenow="{{ mbti_match }}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <div class="match-explanation">
+                            <div class="match-detail">
+                                <i class="fas fa-check-circle"></i> 思考方式：高度一致
+                            </div>
+                            <div class="match-detail">
+                                <i class="fas fa-times-circle" style="color: var(--danger);"></i> 决策方式：存在差异
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="match-card">
+                        <div class="match-icon">
+                            <i class="fas fa-sync-alt"></i>
+                        </div>
+                        <div class="match-type">互补性分析</div>
+                        <div class="match-explanation">
+                            <div class="match-detail">
+                                <i class="fas fa-plus-circle" style="color: var(--success);"></i> 知识领域：互为补充
+                            </div>
+                            <div class="match-detail">
+                                <i class="fas fa-plus-circle" style="color: var(--success);"></i> 技能组合：高度互补
+                            </div>
+                            <div class="match-detail">
+                                <i class="fas fa-check-circle"></i> 沟通方式：良好匹配
+                            </div>
+                            <div class="match-detail">
+                                <i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i> 学习强度：略有差异
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="total-match">
+                    <div class="total-label">整体匹配度</div>
+                    <div class="total-value">{{ total_match }}</div>
+                    <div class="match-stars">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                    <p class="match-description">
+                        {% if total_match_float >= 0.85 %}
+                        完美匹配！你们的学习偏好高度一致，MBTI互补性强，非常适合成为长期学习伙伴。
+                        {% elif total_match_float >= 0.7 %}
+                        优秀的匹配！你们在多个方面高度契合，有很大的合作潜力。
+                        {% elif total_match_float >= 0.6 %}
+                        良好的匹配！你们有足够的共同点，但也存在互补空间。
+                        {% else %}
+                        基本匹配！你们在部分领域有合作潜力，但需要更多沟通协调。
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="actions">
+            <button id="add-friend-btn" class="btn btn-primary" 
+                    data-current-id="{{ user_id }}"
+                    data-partner-id="{{ partner.stu_id }}">
+                <i class="fas fa-envelope"></i> 添加好友
+            </button>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 从模板变量获取总匹配度并转换为数值
+        const totalMatchRate = parseFloat("{{ total_match|cut:'%' }}") / 100;
+        
+        // 更新星级评价
+        document.addEventListener('DOMContentLoaded', function() {
+            const starsContainer = document.querySelector('.match-stars');
+            const starCount = Math.min(5, Math.ceil(totalMatchRate * 5));
+            starsContainer.innerHTML = '';
+            
+            for (let i = 1; i <= 5; i++) {
+                if (i <= starCount) {
+                    starsContainer.innerHTML += '<i class="fas fa-star"></i>';
+                } else if (i - 0.5 <= starCount) {
+                    starsContainer.innerHTML += '<i class="fas fa-star-half-alt"></i>';
+                } else {
+                    starsContainer.innerHTML += '<i class="far fa-star"></i>';
+                }
+            }
+        });
+        document.getElementById('add-friend-btn').addEventListener('click', function() {
+            const currentId = this.dataset.currentId;
+            const partnerId = this.dataset.partnerId;
+            const btn = this;
+            
+            // 显示加载状态
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 添加中...';
+            btn.disabled = true;
+
+            // 发送AJAX请求
+            fetch("{% url 'add_friend' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ 
+                    current_id: currentId,
+                    partner_id: partnerId 
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert(data.message);
+                    // 跳转到home界面
+                    window.location.href = "{% url 'home' %}"; 
+                } else {
+                    alert('添加失败: ' + data.message);
+                    btn.innerHTML = '<i class="fas fa-envelope"></i> 添加好友';
+                    btn.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('网络请求失败');
+                btn.innerHTML = '<i class="fas fa-envelope"></i> 添加好友';
+                btn.disabled = false;
+            });
+        });
+    </script>
+</body>
+</html>

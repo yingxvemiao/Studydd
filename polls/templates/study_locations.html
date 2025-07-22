@@ -1,0 +1,531 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学习位置管理系统 - 点击交互优化版</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --control-bg: #f8f9ff;
+            --text-dark: #2b2d42;
+            --text-light: #8d99ae;
+            --grid-highlight: rgba(67, 97, 238, 0.3);
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f0f4ff 0%, #eef2ff 100%);
+            min-height: 100vh;
+            padding: 25px;
+            font-family: 'Segoe UI', 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+        
+        .container-box {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 12px 35px rgba(67, 97, 238, 0.15);
+            padding: 30px;
+            height: 110vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .main-container {
+            display: flex;
+            flex: 1;
+            gap: 30px;
+        }
+        
+        /* 左侧控制面板 - 优化样式 */
+        .control-panel {
+            width: 320px;
+            background: var(--control-bg);
+            border-radius: 14px;
+            padding: 25px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+            display: flex;
+            flex-direction: column;
+            height: fit-content;
+            border: 1px solid #e6e9ff;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .panel-header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e6e9ff;
+        }
+        
+        .panel-header h2 {
+            color: var(--secondary-color);
+            font-weight: 700;
+            font-size: 1.8rem;
+            margin: 0;
+        }
+        
+        .control-group {
+            margin-bottom: 22px;
+        }
+        
+        .control-label {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-dark);
+            display: block;
+            font-size: 1.05rem;
+        }
+        
+        .form-select {
+            border-radius: 10px;
+            padding: 12px 18px;
+            border: 1px solid #d7daff;
+            transition: all 0.3s ease;
+            background: white;
+            font-size: 1.05rem;
+            color: var(--text-dark);
+            box-shadow: 0 3px 10px rgba(67, 97, 238, 0.08);
+        }
+        
+        .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.25);
+        }
+        
+        /* 右侧图片显示区域 - 优化样式 */
+        .image-container {
+            flex: 1;
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(67, 97, 238, 0.18);
+            background: #fcfcff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #e6e9ff;
+        }
+        
+        .location-image {
+            max-width: 95%;
+            max-height: 95%;
+            object-fit: contain;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+        
+        .image-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            grid-template-rows: repeat(10, 1fr);
+        }
+        
+        .grid-cell {
+            border: 1px solid rgba(255, 0, 0, 0.2);
+            box-sizing: border-box;
+            transition: background 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            z-index: 5;
+        }
+        
+        .grid-cell:hover {
+            background: rgba(67, 97, 238, 0.1);
+        }
+        
+        .grid-cell.active {
+            background: var(--grid-highlight);
+            box-shadow: 0 0 0 2px var(--primary-color);
+        }
+        
+        /* 按钮样式优化 */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            padding: 16px;
+            font-size: 1.15rem;
+            font-weight: 600;
+            border-radius: 12px;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 15px rgba(67, 97, 238, 0.35);
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(67, 97, 238, 0.45);
+        }
+        
+        /* 选择信息显示 */
+        .selection-info {
+            background: linear-gradient(to right, #edf2ff, #e6f0ff);
+            padding: 18px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+            font-weight: 500;
+            border: 1px solid #d0ddff;
+        }
+        
+        .highlight {
+            background: rgba(67, 97, 238, 0.15);
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            color: var(--secondary-color);
+            font-size: 1.1rem;
+        }
+        
+        /* 页面头部优化 */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 10px 0;
+        }
+        
+        .header h1 {
+            font-weight: 800;
+            font-size: 2.5rem;
+            color: var(--secondary-color);
+            margin-bottom: 12px;
+            background: linear-gradient(to right, #4361ee, #3a0ca3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 10px rgba(67, 97, 238, 0.15);
+        }
+        
+        .header p {
+            color: var(--text-light);
+            font-size: 1.15rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .control-panel {
+                width: 100%;
+            }
+            
+            .image-container {
+                min-height: 60vh;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+        
+        #row-select, #col-select {
+            pointer-events: none;    /* 禁止鼠标交互 */
+            opacity: 0.5;           /* 视觉上置灰 */
+            background-color: #f0f0f0; /* 灰色背景提示禁用 */
+        }
+        
+        /* 添加操作结果提示 */
+        .operation-result {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: rgba(67, 97, 238, 0.9);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            transform: translateX(150%);
+            transition: transform 0.5s ease;
+        }
+        
+        .operation-result.show {
+            transform: translateX(0);
+        }
+        
+        .operation-result.error {
+            background: rgba(220, 53, 69, 0.9);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% comment %} <div class="header"> {% endcomment %}
+            {% comment %} <h1><i class="fas fa-map-marked-alt me-2"></i>学习位置管理系统</h1>
+            <p>点击图片选择位置 | 精确定位学习空间</p> {% endcomment %}
+        {% comment %} </div> {% endcomment %}
+        
+        <div class="container-box">
+            <div class="main-container">
+                <!-- 左侧控制面板 - 优化设计 -->
+                <div class="control-panel">
+                    <div class="panel-header">
+                        <h2>选择你的学习区域</h2>
+                    </div>
+                    
+                    <!-- 表单提交方式更新数据库 -->
+                    <form id="position-form" method="POST" action="{% url 'update_position' %}">
+                        {% csrf_token %}
+                        <div class="control-group">
+                            <label class="control-label" for="location-select">
+                                <i class="fas fa-map-marker-alt me-2"></i>选择楼层和分区
+                            </label>
+                            <select class="form-select" id="location-select" name="location_index">
+                                <option value="0">1a</option>
+                                <option value="1">1b</option>
+                                <option value="2">1c</option>
+                                <option value="3">1d</option>
+                                <option value="4">3a</option>
+                                <option value="5">3b</option>
+                                <option value="6">3c</option>
+                                <option value="7">4a</option>
+                                <option value="8">4b</option>
+                                <option value="9">4c</option>
+                                <option value="10">5</option>
+                                <option value="11">6</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="control-label" for="row-select">
+                                <i class="fas fa-arrows-alt-v me-2"></i>行坐标
+                            </label>
+                            <select class="form-select" id="row-select" name="row"></select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="control-label" for="col-select">
+                                <i class="fas fa-arrows-alt-h me-2"></i>列坐标
+                            </label>
+                            <select class="form-select" id="col-select" name="col"></select>
+                        </div>
+                        
+                        <div class="selection-info">
+                            <p>当前选择：<span class="highlight" id="current-location">1a</span></p>
+                            <p>坐标：行 <span class="highlight" id="current-row">1</span> - 
+                               列 <span class="highlight" id="current-col">1</span></p>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-sync-alt me-2"></i>更新学习位置并回到主页
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- 右侧图片显示区域 - 优化设计 -->
+                <div class="image-container">
+                    <img id="location-image" src="{% static 'images/1a.jpg' %}" alt="学习区域" class="location-image">
+                    <div class="image-grid" id="image-grid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 操作结果提示 -->
+    <div class="operation-result" id="operation-result">
+        <i class="fas fa-check-circle me-2"></i>
+        <span id="result-text">操作成功！</span>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const locationNames = ['1a', '1b', '1c', '1d', '3a', '3b', '3c', '4a', '4b', '4c', '5', '6'];
+            
+            // 获取静态文件基础路径
+            const staticBase = "{% static 'images/' %}";
+            
+            // 当前选中的格子
+            let selectedCell = null;
+            
+            // 初始化坐标下拉菜单
+            function initCoordinateSelects() {
+                const rowSelect = document.getElementById('row-select');
+                const colSelect = document.getElementById('col-select');
+                
+                rowSelect.innerHTML = '';
+                colSelect.innerHTML = '';
+                
+                for (let i = 1; i <= 10; i++) {
+                    const rowOption = document.createElement('option');
+                    rowOption.value = i;
+                    rowOption.textContent = i;
+                    
+                    const colOption = document.createElement('option');
+                    colOption.value = i;
+                    colOption.textContent = i;
+                    
+                    rowSelect.appendChild(rowOption);
+                    colSelect.appendChild(colOption);
+                }
+                
+                rowSelect.value = 1;
+                colSelect.value = 1;
+            }
+            
+            // 创建图片网格并添加点击事件
+            function createImageGrid() {
+                const gridContainer = document.getElementById('image-grid');
+                gridContainer.innerHTML = '';
+                
+                for (let i = 0; i < 10; i++) {
+                    for (let j = 0; j < 10; j++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'grid-cell';
+                        cell.dataset.row = i + 1;
+                        cell.dataset.col = j + 1;
+                        
+                        // 添加点击事件
+                        cell.addEventListener('click', function() {
+                            // 移除之前选中的样式
+                            if (selectedCell) {
+                                selectedCell.classList.remove('active');
+                            }
+                            
+                            // 添加当前选中样式
+                            this.classList.add('active');
+                            selectedCell = this;
+                            
+                            // 获取行号和列号
+                            const row = this.dataset.row;
+                            const col = this.dataset.col;
+                            
+                            // 更新下拉列表
+                            document.getElementById('row-select').value = row;
+                            document.getElementById('col-select').value = col;
+                            
+                            // 更新信息显示
+                            updateSelectionInfo();
+                            
+                            // 添加点击动画效果
+                            this.style.transform = 'scale(0.95)';
+                            setTimeout(() => {
+                                this.style.transform = '';
+                            }, 300);
+                        });
+                        
+                        gridContainer.appendChild(cell);
+                    }
+                }
+            }
+            
+            // 更新位置信息显示
+            function updateSelectionInfo() {
+                const locationSelect = document.getElementById('location-select');
+                const rowSelect = document.getElementById('row-select');
+                const colSelect = document.getElementById('col-select');
+                
+                const locationIndex = parseInt(locationSelect.value);
+                const row = rowSelect.value;
+                const col = colSelect.value;
+                
+                document.getElementById('current-location').textContent = locationNames[locationIndex];
+                document.getElementById('current-row').textContent = row;
+                document.getElementById('current-col').textContent = col;
+            }
+            
+            // 更新图片显示
+            function updateLocationImage() {
+                const locationSelect = document.getElementById('location-select');
+                const locationIndex = parseInt(locationSelect.value);
+                
+                // 根据选择更新图片
+                const image = document.getElementById('location-image');
+                image.src = staticBase + locationNames[locationIndex] + '.jpg';
+                image.alt = '学习区域 ' + locationNames[locationIndex];
+                
+                // 创建新的网格
+                createImageGrid();
+                updateSelectionInfo();
+            }
+            
+            // 显示操作结果
+            function showResult(message, isError = false) {
+                const resultElement = document.getElementById('operation-result');
+                const textElement = document.getElementById('result-text');
+                
+                textElement.textContent = message;
+                resultElement.classList.remove('error');
+                
+                if (isError) {
+                    resultElement.classList.add('error');
+                }
+                
+                resultElement.classList.add('show');
+                
+                setTimeout(() => {
+                    resultElement.classList.remove('show');
+                }, 3000);
+            }
+            
+            // 处理表单提交
+            document.getElementById('position-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const locationSelect = document.getElementById('location-select');
+                const rowSelect = document.getElementById('row-select');
+                const colSelect = document.getElementById('col-select');
+                
+                const locationIndex = parseInt(locationSelect.value);
+                const row = parseInt(rowSelect.value);
+                const col = parseInt(colSelect.value);
+                
+                const x1 = locationIndex + 1;
+                const x2 = row;
+                const x3 = col;
+                
+                const stu_area = x1 * 100 + x2 * 10 + x3;
+                const locationName = locationNames[locationIndex];
+                
+                // 添加位置编码到表单
+                const stuAreaInput = document.createElement('input');
+                stuAreaInput.type = 'hidden';
+                stuAreaInput.name = 'stu_area';
+                stuAreaInput.value = stu_area;
+                this.appendChild(stuAreaInput);
+                
+                // 提交表单
+                this.submit();
+                
+                // 显示成功消息
+                showResult(`学习位置已更新！区域: ${locationName}, 坐标: 行 ${row}, 列 ${col}`);
+            });
+            
+            // 初始化页面
+            function initPage() {
+                initCoordinateSelects();
+                updateLocationImage();
+                
+                // 添加图片加载失败的回调
+                document.getElementById('location-image').onerror = function() {
+                    console.error("图片加载失败: ", this.src);
+                    alert('图片加载失败，请检查路径: ' + this.src);
+                };
+                
+                // 设置事件监听器
+                document.getElementById('location-select').addEventListener('change', updateLocationImage);
+                document.getElementById('row-select').addEventListener('change', updateSelectionInfo);
+                document.getElementById('col-select').addEventListener('change', updateSelectionInfo);
+            }
+            
+            // 页面加载完成后初始化
+            initPage();
+        });
+    </script>
+</body>
+</html>

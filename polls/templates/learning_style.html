@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学习风格测试</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --completed-color: #4caf50;
+            --active-color: #ff9800;
+            --text-dark: #2b2d42;
+            --text-light: #8d99ae;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f0f4ff 0%, #eef2ff 100%);
+            min-height: 100vh;
+            padding: 20px;
+            font-family: 'Segoe UI', 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            color: var(--text-dark);
+        }
+        
+        .test-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 12px 35px rgba(67, 97, 238, 0.15);
+            display: flex;
+            min-height: 85vh;
+            position: relative; /* 添加相对定位 */
+        }
+        
+        .questions-section {
+            flex: 3;
+            padding: 30px;
+            background: #f8f9ff;
+            position: relative;
+            overflow-y: auto; /* 添加滚动 */
+        }
+        
+        .navigation-section {
+            position: sticky; /* 使用sticky定位 */
+            top: 20px; /* 距离顶部距离 */
+            height: fit-content; /* 高度自适应内容 */
+            padding: 30px 15px;
+            background: #ffffff;
+            border-left: 1px solid #e6e9ff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-radius: 0 16px 16px 0; /* 右侧圆角 */
+            box-shadow: -5px 0 15px rgba(0,0,0,0.05); /* 左侧阴影 */
+        }
+        
+        .question-card {
+            display: none;
+            padding: 25px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+            margin-bottom: 20px;
+            border: 1px solid #e6e9ff;
+        }
+        
+        .question-card.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .question-number {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+        }
+        
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        
+        .option-item {
+            padding: 15px;
+            margin-bottom: 12px;
+            border: 1px solid #d7daff;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .option-item:hover {
+            background-color: #eef2ff;
+            transform: translateX(5px);
+        }
+        
+        .option-item.selected {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
+        }
+        
+        .option-label {
+            font-weight: 600;
+            margin-right: 12px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #eef2ff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+        }
+        
+        .option-item.selected .option-label {
+            background: white;
+            color极
+        }
+        
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+        }
+        
+        .nav-btn {
+            padding: 10px 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-btn:hover {
+            background: var(--secondary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(67, 97, 238, 0.35);
+        }
+        
+        .nav-btn:disabled {
+            background: var(--text-light);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .question-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+        
+        .grid-item {
+            width: 100%;
+            aspect-ratio: 1/1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #eef2ff;
+            border-radius: 8px;
+            font-weight: 600;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .grid-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .grid-item.completed {
+            background: var(--completed-color);
+            color: white;
+        }
+        
+        .grid-item.active {
+            border-color: var(--active-color);
+            transform: scale(1.1);
+            box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.3);
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.15rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 15px rgba(67, 97, 238, 0.35);
+        }
+        
+        .submit-btn:disabled {
+            background: var(--text-light);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(67, 97, 238, 0.45);
+        }
+        
+        .progress-container {
+            height: 8px;
+            background: #e6e9ff;
+            border-radius: 4px;
+            margin: 30px 0 20px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .progress-text {
+            text-align: center;
+            font-weight: 600;
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .test-container {
+                flex-direction: column;
+            }
+            .navigation-section {
+                position: static;
+                width: 100%;
+                border-left: none;
+                border-top: 1px solid #e6e9ff;
+                border-radius: 0 0 16px 16px;
+                box-shadow: 0 -5px 15px rgba(0,0,0,0.05);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <!-- 左侧题目区域 -->
+        <div class="questions-section">
+            <!-- 进度条 -->
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar" style="width: 5%;"></div>
+            </div>
+            <div class="progress-text" id="progress-text">已完成 0/20 题</div>
+            
+            <!-- 题目卡片 -->
+            <div class="question-card active" data-question="1">
+                <div class="question-number">问题 1/20</div>
+                <div class="question-text">当学习新知识时，你更喜欢：</div>
+                <div class="option-item" data-option="A">
+                    <span class="option-label">A</span> 阅读书籍或文字材料
+                </div>
+                <div class="option-item" data-option="B">
+                    <span class="option-label">B</span> 听讲座或音频讲解
+                </div>
+                <div class="option-item" data-option="C">
+                    <span class="option-label">C</span> 观看视频或图表
+                </div>
+                <div class="option-item" data-option="D">
+                    <span class="option-label">D</span> 动手实践或实验
+                </div>
+            </div>
+            
+            <div class="question-card" data-question="2">
+                <div class="question-number">问题 2/20</div>
+                <div class="question-text">当需要记住信息时，你通常会：</div>
+                <div class="option-item" data-option="A">
+                    <span class="option-label">A</span> 写下笔记或制作清单
+                </div>
+                <div class="option-item" data-option="B">
+                    <span class="option-label">B</span> 反复朗读或复述
+                </div>
+                <div class="option-item" data-option="C">
+                    <span class="option-label">C</span> 在脑海中形成图像
+                </div>
+                <div class="option-item" data-option="D">
+                    <span class="option-label">D</span> 通过动作或实践记忆
+                </div>
+            </div>
+            
+            <div class="question-card" data-question="3">
+                <div class="question-number">问题 3/20</div>
+                <div class="question-text">在小组讨论中，你通常：</div>
+                <div class="option-item" data-option="A">
+                    <span class="option-label">A</span> 记录讨论要点和结论
+                </div>
+                <div class="option-item" data-option="B">
+                    <span class="option-label">B</span> 积极参与口头讨论
+                </div>
+                <div class="option-item" data-option="C">
+                    <span class="option-label">C</span> 在白板上画图解释观点
+                </div>
+                <div class="option-item" data-option="D">
+                    <span class="option-label">D</span> 通过活动或角色扮演表达观点
+                </div>
+            </div>
+            
+            <div class="question-card" data-question="4">
+                <div class="question-number">问题 4/20</div>
+                <div class="question-text">当学习复杂概念时，你觉得最有效的方法是：</div>
+                <div class="option-item" data-option="A">
+                    <span class="option-label">A</span> 阅读详细的文字解释
+                </div>
+                <div class="option-item" data-option="B">
+                    <span class="option-label">B</span> 听专家讲解
+                </div>
+                <div class="option-item" data-option="C">
+                    <span class="option-label">C</span> 观看图解或流程图
+                </div>
+                <div class="option-item" data-option="D">
+                    <span class="option-label">D</span> 通过模型或实物操作
+                </div>
+            </div>
+            
+            <div class="question-card" data-question="5">
+                <div class="question-number">问题 5/20</div>
+                <div class="question-text">当你需要向别人解释路线时，你通常会：</div>
+                <div class="option-item" data-option="A">
+                    <span class="option-label">A</span> 写下详细的步骤说明
+                </div>
+                <div class="option-item" data-option="B">
+                    <span class="option-label">B</span> 口头描述方向和地标
+                </div>
+                <div class="option-item" data-option="C">
+                    <span class="option-label">C</span> 画一张简单的地图
+                </div>
+                <div class="option-item" data-option="D">
+                    <span class="option-label">D</span> 亲自带他们走一遍
+                </div>
+            </div>
+            
+            <div class="question-card" data-question="6">
+                <div class="question-number">问题 6/20</div>
+                <div class="question-text">当学习新技能时，你倾向于：</div>
+                <div class="option-item" data-option="A">
+                    <span class="option-label">A</span> 阅读说明书或操作手册
+                </div>
+                <div class="option-item" data-option="B">
+                    <span class="option-label">B</span> 听别人讲解步骤
+                </div>
+                <div class="option-item" data-option="C">
+                    <span class="option-label">C</span> 观看演示视频
+                </div>
+                <div class="option-item" data-option="D">
+                    <span class="option-label">D</span> 直接动手尝试
+                </div>
+            </div>
+            
+            <div class="question-card" data-question="7">
+                <div class="question-number">问题 7/20</div>
+                <div class="question-text">在空闲时间，你更喜欢：</div>
+                <div class="option-item" data-option="A">
+                    <span class="option-label">A</span> 阅读书籍或杂志
+                </div>
+                <div class="option-item" data-option="B">
+                    <span class="option-label">B</span> 听音乐或播客
+                </div>
+                <div class="option-item" data-option="C">
+                    <span class="option-label">C</span> 看电影或浏览图片
+                </div>
+                <div class="option-item" data-option="D">
+                    <span class="option-label">D</span> 运动或手工制作
+                </div>
+            </div>
+            
+            <div class="question-card" data-question="8">
+                <div class="question-number">问题 8/20</div>
+                <div class="question-text">当需要记住某人的电话号码时，你会：</div>
+                <div class="option-item" data-option="A">
+                    <span class="option-label">A</span> 写下来或输入手机
+                </div>
+                <div class="option-item" data-option="B">
+                    <span class="option-label">B</span> 反复念诵
+                </div>
+                <div class="option-item" data-option="C">
+                    <span class="option-label">C</span> 想象数字的形状或位置
+                </div>
+                <div class="option-item" data-option="D">
+                    <span class="option-label">D</span> 在手机或空气中比划数字
+                </div>
+            </div>
+            
+            <div class="question-card" data-question="9">
+                <div class="question-number">问题 9/20</div>
+                <div class="question-text">在课堂上，你更容易记住：</div>
+                <div class="option-item" data-option="A">
+                    <span class="option-label">A</span> 讲义或板书内容
+                </div>
+                <div class="option-item" data-option="B">
+                    <span class="option-label">B</span> 老师口头强调的重点
+                </div>
+                <div class="option-item" data-option="C">
+                    <span class="option-label">C</span> 图表、图片或视频
+                </div>
+                <div class="option-item" data-option="D">
+                    <span class="option-label">D</span> 实验或课堂活动
+                </div>
+            </div>
+            
+            <div class="question-card" data-question="10">
+                <div class="question-number">问题 10/20</div>
+                <div class="question-text">当你需要解决一个问题时，你通常会：</div>
+                <div class="option-item" data-option="A">
+                    <span class="option-label">A</span> 列出所有可能的解决方案
+                </div>
+                <div class="option-item" data-option="B">
+                    <span class="option-label">B</span> 与他人讨论各种方案
+                </div>
+                <div class="option-item" data-option="C">
+                    <span class="option-label">C</span> 想象问题解决的过程
+                </div>
+                <div class="option-item" data-option="D">
+                    <span class="option-label">D</span> 直接尝试不同方法
+                </div>
+            </div>
+            
+            <div class="question-card" data-question="11">
+                <div class="question-number">问题 11/20</div>
+                <div class="question-text">在学习新知识前，你更喜欢：</div>
+                <div class="option-item" data-option="A">
+                    <span class="option-label">A</span> 阅读相关背景资料
+                </div>
+                <div class="option-item" data-option="B">
+                    <span class="option-label">B</span> 听介绍性讲座
+                </div>
+                <div class="option-item" data-option="C">
+                    <span class="option-label">C</span> 观看介绍性视频
+                </div>
+                <div class="option-item" data-option="D">
+                    <span class="option-label">D</span> 参与预热活动
+                </div>
+            </div>
+            
+            <div class="question-card" data-question="12">
+                <div class="question-number">问题 12/20</div>
+                <div class="question-text">当复习考试时，你通常：</div>
+                <div class="option-item" data-option="A">
+                    <span class="option-label">A</span> 重读笔记和教材
+                </div>
+                <div class="option-item" data-option="B">
+                    <span class="option-label">B</span> 听录音或参加复习课
+                </div>
+                <div class="option-item" data-option="C">
+                    <span class="option-label">C</span> 制作思维导图或图表
+                </div>
+                <div class="option-item" data-option="D">
+                    <span class="option-label">D</span> 做练习题或模拟测试
+                </div>
+            </div>
+            
+            <div class="question-card" data-question="13">
+                <div class="question-number">问题 13/20</div>
+                <div class="question-text">在理解抽象概念时，你觉得最有效的方法是：</div>
+                <div class="option-item" data-option="A">
+                    <span class="option-label">A</span> 阅读详细的定义和解释
+                </div>
+                <div class="option-item" data-option="B">
+                    <span class="option-label">B</span> 听别人用简单语言解释
+                </div>
+                <div class="option-item" data-option="C">
+                    <span class="option-label">C</span> 使用视觉类比或比喻
+                </div>
+                <div class="option-item" data-option="D">
+                    <span class="option-label">D</span> 通过物理模型或实验
+                </div>
+            </div>
+            
+            <div class="question-card" data-question="14">
+                <div class="question-number">问题 14/20</div>
+                <div class="question-text">当学习外语时，你更注重：</div>
+                <div class="option-item" data-option="A">
+                    <span class="option-label">A</span> 语法规则和词汇表
+                </div>
+                <div class="option-item" data-option="B">
+                    <span class="option-label">B</span> 发音和听力理解
+                </div>
+                <div class="option-item" data-option="C">
+                    <span class="option-label">C</span> 视觉辅助和情境图片
+                </div>
+                <div class="option-item" data-option="D">
+                    <span class="option-label">D</span> 实际对话和角色扮演
+                </div>
+            </div>
+            
+            <div class="question-card" data-question="15">
+                <div class="question-number">问题 15/20</div>
+                <div class="question-text">当需要集中注意力时，你通常：</div>
+                <div class="option-item" data-option="A">
+                    <span class="option-label">A</span> 寻找安静的环境阅读
+                </div>
+                <div class="option-item" data-option="B">
+                    <span class="option-label">B</span> 听背景音乐帮助专注
+                </div>
+                <div class="option-item" data-option="C">
+                    <span class="option-label">C</span> 整理桌面保持视觉整洁
+                </div>
+                <div class="option-item" data-option="D">
+                    <span class="option-label">D</span> 通过轻微动作保持注意力
+                </div>
+            </div>
+            
+            <div class="question-card" data-question="16">
+                <div class="question-number">问题 16/20</div>
+                <div class="question-text">在团队项目中，你通常负责：</div>
+                <div class="option-item" data-option="A">
+                    <span class="option-label">A</span> 整理文档和编写报告
+                </div>
+                <div class="option-item" data-option="B">
+                    <span class="option-label">B</span> 口头汇报和沟通
+                </div>
+                <div class="option-item" data-option="C">
+                    <span class="option-label">C</span> 设计图表和视觉材料
+                </div>
+                <div class="option-item" data-option="D">
+                    <span class="option-label">D</span> 实际操作和组装
+                </div>
+            </div>
+            
+            <div class="question-card" data-question="17">
+                <div class="question-number">问题 17/20</div>
+                <div class="question-text">当学习历史事件时，你更容易记住：</div>
+                <div class="option-item" data-option="A">
+                    <span class="option-label">A</span> 时间线和关键日期
+                </div>
+                <div class="option-item" data-option="B">
+                    <span class="option-label">B</span> 重要人物的演讲
+                </div>
+                <div class="option-item" data-option="C">
+                    <span class="option-label">C</span> 历史照片和地图
+                </div>
+                <div class="option-item" data-option="D">
+                    <span class="option-label">D</span> 历史重现或实地考察
+                </div>
+            </div>
+            
+            <div class="question-card" data-question="18">
+                <div class="question-number">问题 18/20</div>
+                <div class="question-text">当你需要理解一个复杂系统时，你：</div>
+                <div class="option-item" data-option="A">
+                    <span class="option-label">A</span> 阅读技术文档
+                </div>
+                <div class="option-item" data-option="B">
+                    <span class="option-label">B</span> 听专家解释系统原理
+                </div>
+                <div class="option-item" data-option="C">
+                    <span class="option-label">C</span> 查看系统架构图
+                </div>
+                <div class="option-item" data-option="D">
+                    <span class="option-label">D</span> 动手拆解和组装
+                </div>
+            </div>
+            
+            <div class="question-card" data-question="19">
+                <div class="question-number">问题 19/20</div>
+                <div class="question-text">在准备演讲时，你通常：</div>
+                <div class="option-item" data-option="A">
+                    <span class="option-label">A</span> 撰写详细的演讲稿
+                </div>
+                <div class="option-item" data-option="B">
+                    <span class="option-label">B</span> 多次口头练习
+                </div>
+                <div class="option-item" data-option="C">
+                    <span class="option-label">C</span> 制作精美的幻灯片
+                </div>
+                <div class="option-item" data-option="D">
+                    <span class="option-label">D</span> 设计互动环节
+                </div>
+            </div>
+            
+            <div class="question-card" data-question="20">
+                <div class="question-number">问题 20/20</div>
+                <div class="question-text">当你学习数学概念时，你更喜欢：</div>
+                <div class="option-item" data-option="A">
+                    <span class="option-label">A</span> 研究公式和推导过程
+                </div>
+                <div class="option-item" data-option="B">
+                    <span class="option-label">B</span> 听老师讲解解题方法
+                </div>
+                <div class="option-item" data-option="C">
+                    <span class="option-label">C</span> 使用图形和几何表示
+                </div>
+                <div class="option-item" data-option="D">
+                    <span class="option-label">D</span> 解决实际问题
+                </div>
+            </div>
+            
+            <!-- 导航按钮 -->
+            <div class="nav-btns">
+                <button class="nav-btn" id="prev-btn" disabled>
+                    <i class="fas fa-arrow-left"></i> 上一题
+                </button>
+                <button class="nav-btn" id="next-btn">
+                    下一题 <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 右侧导航区域 -->
+        <div class="navigation-section">
+            <h3 class="text-center mb-4">题目导航</h3>
+            <div class="question-grid" id="question-grid">
+                <!-- 题目导航按钮将由JavaScript动态生成 -->
+            </div>
+            
+            <!-- 直接提交表单 -->
+            <form method="post" action="{% url 'save_learning_style' %}">
+                {% csrf_token %}
+                <input type="hidden" name="stu_style" id="answer-string">
+                <button type="submit" class="submit-btn" id="submit-btn" disabled>
+                    <i class="fas fa-paper-plane me-2"></i>提交测试
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化变量
+            const totalQuestions = 20;
+            let currentQuestion = 1;
+            const answers = new Array(totalQuestions).fill('');
+            
+            // 生成题目导航按钮
+            const questionGrid = document.getElementById('question-grid');
+            for (let i = 1; i <= totalQuestions; i++) {
+                const gridItem = document.createElement('div');
+                gridItem.className = 'grid-item';
+                gridItem.textContent = i;
+                gridItem.dataset.question = i;
+                
+                gridItem.addEventListener('click', function() {
+                    navigateToQuestion(parseInt(this.dataset.question));
+                });
+                
+                questionGrid.appendChild(gridItem);
+            }
+            
+            // 更新进度
+            function updateProgress() {
+                const completed = answers.filter(a => a !== '').length;
+                const progress = (completed / totalQuestions) * 100;
+                document.getElementById('progress-bar').style.width = `${progress}%`;
+                document.getElementById('progress-text').textContent = 
+                    `已完成 ${completed}/${totalQuestions} 题`;
+                
+                // 更新提交按钮状态
+                document.getElementById('submit-btn').disabled = completed < totalQuestions;
+            }
+            
+            // 导航到指定题目
+            function navigateToQuestion(questionNum) {
+                // 隐藏当前题目
+                document.querySelector(`.question-card[data-question="${currentQuestion}"]`).classList.remove('active');
+                
+                // 移除当前题目的活动状态
+                document.querySelector(`.grid-item[data-question="${currentQuestion}"]`).classList.remove('active');
+                
+                // 更新当前题目
+                currentQuestion = questionNum;
+                
+                // 显示新题目
+                document.querySelector(`.question-card[data-question="${currentQuestion}"]`).classList.add('active');
+                
+                // 添加新题目的活动状态
+                document.querySelector(`.grid-item[data-question="${currentQuestion}"]`).classList.add('active');
+                
+                // 更新导航按钮状态
+                document.getElementById('prev-btn').disabled = currentQuestion === 1;
+                document.getElementById('next-btn').disabled = currentQuestion === totalQuestions;
+                
+                // 如果该题已有答案，选中它
+                if (answers[currentQuestion - 1] !== '') {
+                    const selectedOption = document.querySelector(
+                        `.question-card[data-question="${currentQuestion}"] .option-item[data-option="${answers[currentQuestion - 1]}"]`
+                    );
+                    if (selectedOption) {
+                        selectedOption.classList.add('selected');
+                    }
+                }
+            }
+            
+            // 选项点击事件
+            document.querySelectorAll('.option-item').forEach(option => {
+                option.addEventListener('click', function() {
+                    // 移除同一题目的其他选项选中状态
+                    const questionCard = this.closest('.question-card');
+                    questionCard.querySelectorAll('.option-item').forEach(item => {
+                        item.classList.remove('selected');
+                    });
+                    
+                    // 选中当前选项
+                    this.classList.add('selected');
+                    
+                    // 保存答案
+                    const questionNum = parseInt(questionCard.dataset.question);
+                    answers[questionNum - 1] = this.dataset.option;
+                    
+                    // 更新导航状态
+                    const gridItem = document.querySelector(`.grid-item[data-question="${questionNum}"]`);
+                    gridItem.classList.add('completed');
+                    
+                    // 更新进度
+                    updateProgress();
+                    
+                    // 如果不是最后一题，自动跳转到下一题
+                    if (questionNum < totalQuestions) {
+                        setTimeout(() => {
+                            navigateToQuestion(questionNum + 1);
+                        }, 300);
+                    }
+                });
+            });
+            
+            // 上一题按钮
+            document.getElementById('prev-btn').addEventListener('click', function() {
+                if (currentQuestion > 1) {
+                    navigateToQuestion(currentQuestion - 1);
+                }
+            });
+            
+            // 下一题按钮
+            document.getElementById('next-btn').addEventListener('click', function() {
+                if (currentQuestion < totalQuestions) {
+                    navigateToQuestion(currentQuestion + 1);
+                }
+            });
+            
+            // 表单提交处理
+            document.querySelector('form').addEventListener('submit', function(e) {
+                // 检查是否全部完成
+                if (answers.some(answer => answer === '')) {
+                    e.preventDefault();
+                    alert('请完成所有题目后再提交！');
+                    return;
+                }
+                
+                // 拼接答案字符串
+                const answerString = answers.join('');
+                document.getElementById('answer-string').value = answerString;
+            });
+            
+            // 初始化导航状态
+            document.querySelector(`.grid-item[data-question="1"]`).classList.add('active');
+            updateProgress();
+        });
+    </script>
+</body>
+</html>

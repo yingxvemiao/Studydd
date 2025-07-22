@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网课推荐 - 学习社区</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-bg: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            --card-bg: rgba(255, 255, 255, 0.97);
+            --header-text: #ffffff;
+            --gold: linear-gradient(135deg, #FFD700, #D4AF37);
+            --silver: linear-gradient(135deg, #C0C0C0, #A9A9A9);
+            --bronze: linear-gradient(135deg, #CD7F32, #8C7853);
+            
+            /* 新增字体系统 */
+            --font-heading: 'Segoe UI', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+            --font-body: 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: var(--primary-bg);
+            min-height: 100vh;
+            padding: 20px;
+            font-family: var(--font-body);
+            background-attachment: fixed;
+            color: #333; /* 增加默认文本颜色 */
+            line-height: 1.6; /* 优化行高提升可读性 */
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 20px 0;
+        }
+        
+        .header h1 {
+            color: var(--header-text);
+            font-weight: 800; /* 增加字重更醒目 */
+            font-size: 2.8rem; /* 增大标题字号 */
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            font-family: var(--font-heading);
+            letter-spacing: 1px; /* 增加字间距提升设计感 */
+        }
+        
+        .header p {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.3rem;
+            font-weight: 300;
+            margin-top: 10px;
+        }
+        
+        .ranking-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+        
+        .table-header {
+            background-color: #4a6baf;
+            color: white;
+            font-weight: 700; /* 表头加粗 */
+            font-family: var(--font-heading);
+            font-size: 1.15rem; /* 增大表头字号 */
+            letter-spacing: 0.5px;
+        }
+        
+        .ranking-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-family: var(--font-body);
+        }
+        
+        .ranking-table th {
+            padding: 18px 15px; /* 增大表头内边距 */
+            text-align: center;
+            vertical-align: middle;
+        }
+        
+        .ranking-table td {
+            padding: 16px 15px; /* 增大单元格内边距 */
+            text-align: center;
+            vertical-align: middle;
+            border-bottom: 1px solid #eef2f7;
+            font-size: 1.05rem; /* 增大内容字号 */
+            color: #444; /* 加深文本颜色 */
+        }
+        
+        .ranking-table tbody tr {
+            transition: all 0.2s;
+        }
+        
+        .ranking-table tbody tr:hover {
+            background-color: #f8f9ff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+        
+        .rank-cell {
+            font-weight: 800; /* 排名数字更粗 */
+            font-size: 1.3rem; /* 增大排名数字 */
+            width: 60px;
+            font-family: var(--font-heading);
+        }
+        
+        .top-1 { background: var(--gold); color: white; }
+        .top-2 { background: var(--silver); color: white; }
+        .top-3 { background: var(--bronze); color: white; }
+        
+        .medal {
+            display: inline-block;
+            width: 40px; /* 增大奖牌尺寸 */
+            height: 40px;
+            border-radius: 50%;
+            line-height: 40px;
+            font-weight: bold;
+            margin-right: 8px;
+            font-size: 1.4rem; /* 增大奖牌图标 */
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .gender-icon {
+            margin-left: 10px; /* 增大性别图标间距 */
+            font-size: 1.1em; /* 增大性别图标 */
+        }
+        
+        .mbti-badge {
+            display: inline-block;
+            padding: 6px 14px; /* 增大MBTI徽章内边距 */
+            border-radius: 16px; /* 更圆的边角 */
+            background: #eef2f7;
+            color: #4a5568;
+            font-size: 1rem; /* 增大MBTI文本 */
+            font-weight: 600; /* MBTI加粗 */
+            font-family: 'Courier New', monospace; /* 等宽字体增强辨识度 */
+        }
+        
+        .score-value {
+            font-weight: 800; /* 评分数字更粗 */
+            font-size: 1.3rem; /* 增大评分数字 */
+            color: #2c3e50;
+        }
+        
+        /* 新增列名样式 */
+        .name-value {
+            font-weight: 600; /* 姓名加粗 */
+            font-size: 1.15rem; /* 增大姓名字号 */
+        }
+        
+        .gender-value {
+            font-weight: 500; /* 性别中等字重 */
+        }
+        
+        .mbti-value {
+            font-weight: 500;
+        }
+        
+        .footer {
+            text-align: center;
+            color: rgba(255,255,255,0.85);
+            padding: 30px 0 20px; /* 增大页脚内边距 */
+            font-size: 1rem;
+            font-weight: 300;
+            margin-top: 25px;
+        }
+        
+        /* 响应式优化 */
+        @media (max-width: 768px) {
+            .ranking-table th:nth-child(4),
+            .ranking-table td:nth-child(4) {
+                display: none;
+            }
+            
+            /* 移动端字体优化 */
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            .header p {
+                font-size: 1.1rem;
+            }
+            .ranking-table th {
+                font-size: 1rem;
+                padding: 14px 10px;
+            }
+            .ranking-table td {
+                font-size: 0.95rem;
+                padding: 12px 10px;
+            }
+            .rank-cell, .score-value {
+                font-size: 1.1rem;
+            }
+            .mbti-badge {
+                font-size: 0.9rem;
+                padding: 4px 8px;
+            }
+        }
+        {% comment %} .ranking-table {
+            table-layout: fixed; /* 核心魔法属性 */
+            width: 100%;         /* 必须配合100%宽度 */
+        } {% endcomment %}
+        .ranking-table td:nth-child(1) { 
+            width: 6%;          /* 课程名称列占40%宽度 */
+        }
+        .ranking-table td:nth-child(2) { 
+            width: 35%;          /* 课程名称列占40%宽度 */
+        }
+        .ranking-table td:nth-child(3) { 
+            width: 10%;          /* 课程名称列占40%宽度 */
+        }
+        .ranking-table td:nth-child(1) { 
+            width: 10%;          /* 课程名称列占40%宽度 */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-video me-3"></i>网课推荐</h1>
+            <p>读万卷书，不如名师指路</p>
+        </div>
+        
+        <div class="ranking-card">
+            <table class="ranking-table">
+                <thead>
+                    <tr class="table-header">
+                        <th>排名</th>
+                        <th>课程名称</th>
+                        <th>点赞数</th>
+                        <th>网址链接</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lesson in lessons %}
+                    <tr>
+                        <td class="rank-cell">
+                            {% if forloop.counter == 1 %}
+                                <span class="medal top-1">🥇</span>
+                            {% elif forloop.counter == 2 %}
+                                <span class="medal top-2">🥈</span>
+                            {% elif forloop.counter == 3 %}
+                                <span class="medal top-3">🥉</span>
+                            {% else %}
+                                {{ forloop.counter }}
+                            {% endif %}
+                        </td>
+                        <td class="name-value">
+                            {{ lesson.les_name }}
+                        </td>
+                        <td class="score-value">
+                            {{ lesson.les_score }}
+                        </td>
+                        <td class="str-value">
+                            {{ lesson.les_str }}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <span style="font-size: 1.2rem; font-weight: 500;">暂无学霸数据，请检查数据库或查询条件</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="footer">
+            <p>© 2025 学习社区 · 网课推荐 · 数据每日更新</p>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

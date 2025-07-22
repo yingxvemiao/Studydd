@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>好友列表 - 学习社区</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-bg: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            --card-bg: rgba(255, 255, 255, 0.97);
+            --header-text: #ffffff;
+            --gold: linear-gradient(135deg, #FFD700, #D4AF37);
+            --silver: linear-gradient(135deg, #C0C0C0, #A9A9A9);
+            --bronze: linear-gradient(135deg, #CD7F32, #8C7853);
+            
+            /* 积分颜色定义 */
+            --score-blue: #1E90FF;    /* 蓝色 >100分 */
+            --score-green: #32CD32;   /* 绿色 90-100分 */
+            --score-yellow: #FFD700;  /* 黄色 80-89分 */
+            --score-orange: #FFA500;  /* 橙色 60-79分 */
+            --score-red: #FF4500;     /* 红色 <60分 */
+            
+            --font-heading: 'Segoe UI', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+            --font-body: 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: var(--primary-bg);
+            min-height: 100vh;
+            padding: 20px;
+            font-family: var(--font-body);
+            background-attachment: fixed;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 20px 0;
+        }
+        
+        .header h1 {
+            color: var(--header-text);
+            font-weight: 800;
+            font-size: 2.8rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            font-family: var(--font-heading);
+            letter-spacing: 1px;
+        }
+        
+        .header p {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.3rem;
+            font-weight: 300;
+            margin-top: 10px;
+        }
+        
+        .ranking-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+        
+        .table-header {
+            background-color: #4a6baf;
+            color: white;
+            font-weight: 700;
+            font-family: var(--font-heading);
+            font-size: 1.15rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .ranking-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-family: var(--font-body);
+        }
+        
+        .ranking-table th {
+            padding: 18px 15px;
+            text-align: center;
+            vertical-align: middle;
+        }
+        
+        .ranking-table td {
+            padding: 16px 15px;
+            text-align: center;
+            vertical-align: middle;
+            border-bottom: 1px solid #eef2f7;
+            font-size: 1.05rem;
+            color: #444;
+        }
+        
+        .ranking-table tbody tr {
+            transition: all 0.2s;
+        }
+        
+        .ranking-table tbody tr:hover {
+            background-color: #f8f9ff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+        
+        .rank-cell {
+            font-weight: 800;
+            font-size: 1.3rem;
+            width: 60px;
+            font-family: var(--font-heading);
+        }
+        
+        .top-1 { background: var(--gold); color: white; }
+        .top-2 { background: var(--silver); color: white; }
+        .top-3 { background: var(--bronze); color: white; }
+        
+        .medal {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            line-height: 40px;
+            font-weight: bold;
+            margin-right: 8px;
+            font-size: 1.4rem;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .gender-icon {
+            margin-left: 10px;
+            font-size: 1.1em;
+        }
+        
+        .mbti-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 16px;
+            background: #eef2f7;
+            color: #4a5568;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .score-value {
+            font-weight: 800;
+            font-size: 1.3rem;
+            color: #2c3e50;
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            min-width: 80px;
+        }
+        
+        /* 积分颜色规则 */
+        .score-blue { background-color: var(--score-blue); color: white; }
+        .score-green { background-color: var(--score-green); color: white; }
+        .score-yellow { background-color: var(--score-yellow); color: #333; }
+        .score-orange { background-color: var(--score-orange); color: white; }
+        .score-red { background-color: var(--score-red); color: white; }
+        
+        .name-value {
+            font-weight: 600;
+            font-size: 1.15rem;
+        }
+        
+        .gender-value {
+            font-weight: 500;
+        }
+        
+        .mbti-value {
+            font-weight: 500;
+        }
+        
+        .footer {
+            text-align: center;
+            color: rgba(255,255,255,0.85);
+            padding: 30px 0 20px;
+            font-size: 1rem;
+            font-weight: 300;
+            margin-top: 25px;
+        }
+        
+        /* 积分图例 */
+        .score-legend {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0 30px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .ranking-table th:nth-child(4),
+            .ranking-table td:nth-child(4) {
+                display: none;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            .header p {
+                font-size: 1.1rem;
+            }
+            .ranking-table th {
+                font-size: 1rem;
+                padding: 14px 10px;
+            }
+            .ranking-table td {
+                font-size: 0.95rem;
+                padding: 12px 10px;
+            }
+            .rank-cell, .score-value {
+                font-size: 1.1rem;
+            }
+            .mbti-badge {
+                font-size: 0.9rem;
+                padding: 4px 8px;
+            }
+            
+            .score-legend {
+                gap: 10px;
+            }
+            
+            .legend-item {
+                padding: 5px 10px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-user-friends me-3"></i>好友列表</h1>
+            <p>海内存知己，天涯若比邻</p>
+        </div>
+        
+        <!-- 积分图例 -->
+        <div class="score-legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: var(--score-blue);"></div>
+                <span>＞100分</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: var(--score-green);"></div>
+                <span>90-100分</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: var(--score-yellow);"></div>
+                <span>80-89分</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: var(--score-orange);"></div>
+                <span>60-79分</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: var(--score-red);"></div>
+                <span>＜60分</span>
+            </div>
+        </div>
+        
+        <div class="ranking-card">
+            <table class="ranking-table">
+                <thead>
+                    <tr class="table-header">
+                        <th>排名</th>
+                        <th>学霸</th>
+                        <th>性别</th>
+                        <th>MBTI</th>
+                        <th>邮箱</th>
+                        <th>积分</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td class="rank-cell">
+                            {% if forloop.counter == 1 %}
+                                <span class="medal top-1">🥇</span>
+                            {% elif forloop.counter == 2 %}
+                                <span class="medal top-2">🥈</span>
+                            {% elif forloop.counter == 3 %}
+                                <span class="medal top-3">🥉</span>
+                            {% else %}
+                                {{ forloop.counter }}
+                            {% endif %}
+                        </td>
+                        <td class="name-value">
+                            {{ student.stu_name }}
+                        </td>
+                        <td class="gender-value">
+                            {{ student.stu_gender }}
+                        </td>
+                        <td class="mbti-value">
+                            <span class="mbti-badge">{{ student.stu_mbti }}</span>
+                        </td>
+                        <td class="email-value">
+                            {{ student.stu_email }}
+                        </td>
+                        <td>
+                            {% if student.stu_score > 100 %}
+                                <span class="score-value score-blue">{{ student.stu_score }}</span>
+                            {% elif student.stu_score >= 90 %}
+                                <span class="score-value score-green">{{ student.stu_score }}</span>
+                            {% elif student.stu_score >= 80 %}
+                                <span class="score-value score-yellow">{{ student.stu_score }}</span>
+                            {% elif student.stu_score >= 60 %}
+                                <span class="score-value score-orange">{{ student.stu_score }}</span>
+                            {% else %}
+                                <span class="score-value score-red">{{ student.stu_score }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <span style="font-size: 1.2rem; font-weight: 500;">暂无好友数据，请检查数据库或查询条件</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="footer">
+            <p>© 2025 学习社区 · 好友列表 · 数据每日更新</p>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

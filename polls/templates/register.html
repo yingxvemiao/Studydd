@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>用户注册</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;500;700&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            background-size: 400% 400%;
+            animation: gradientBG 12s ease infinite;
+        }
+        @keyframes gradientBG {
+            0% {background-position: 0% 50%}
+            50% {background-position: 100% 50%}
+            100% {background-position: 0% 50%}
+        }
+        .register-container {
+            width: 450px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .register-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .register-header h2 {
+            color: #5a67d8;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .register-header p {
+            color: #718096;
+            margin-top: 5px;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            position: relative;
+        }
+        .full-width {
+            grid-column: span 2;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #4a5568;
+            font-weight: 500;
+        }
+        .input-with-icon {
+            position: relative;
+        }
+        .input-with-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #a0aec0;
+        }
+        .form-control, .form-select {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s;
+            background: #f7fafc;
+            appearance: none;
+        }
+        .form-select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234a5568'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 14px;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #6e8efb;
+            box-shadow: 0 0 0 3px rgba(110, 142, 251, 0.2);
+            outline: none;
+            background: #fff;
+        }
+        .error-message {
+            color: #e53e3e;
+            font-size: 13px;
+            margin-top: 4px;
+            display: none;
+        }
+        .btn-register {
+            width: 100%;
+            padding: 13px;
+            background: linear-gradient(to right, #6e8efb, #a777e3);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 12px rgba(110, 142, 251, 0.4);
+            margin-top: 5px;
+        }
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(110, 142, 251, 0.5);
+        }
+        .form-footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #718096;
+        }
+        .form-footer a {
+            color: #6e8efb;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .form-footer a:hover {
+            text-decoration: underline;
+            color: #5a67d8;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-header">
+            <h2>创建新账户</h2>
+            <p>加入我们的社区</p>
+        </div>
+        <form action="/polls/register/" method="post" id="registerForm">
+            {% csrf_token %}
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label>用户名</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-user"></i>
+                        <input type="text" name="user" class="form-control" placeholder="设置您的用户名" required
+                               value="{{ form_data.user }}">
+                    </div>
+                    <div class="error-message" id="userError">
+                        {{ error_user }}
+                    </div>
+                </div>
+                
+                <div class="form-group full-width">
+                    <label>密码</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" name="pwd" class="form-control" placeholder="设置安全密码" required
+                               value="{{ form_data.pwd }}">
+                    </div>
+                    <div class="error-message" id="pwdError">
+                        {{ error_pwd }}
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>性别</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-venus-mars"></i>
+                        <select name="gender" class="form-select" required>
+                            <option value="">请选择性别</option>
+                            <option value="男" {% if form_data.gender == '男' %}selected{% endif %}>男</option>
+                            <option value="女" {% if form_data.gender == '女' %}selected{% endif %}>女</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>MBTI类型</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-brain"></i>
+                        <select name="mbti" class="form-select" required>
+                            <option value="">请选择类型</option>
+                            {% for type in mbti_types %}
+                            <option value="{{ type }}" {% if form_data.mbti == type %}selected{% endif %}>{{ type }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group full-width">
+                    <label>电子邮箱</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" name="email" class="form-control" placeholder="输入有效邮箱" required
+                               value="{{ form_data.email }}">
+                    </div>
+                    <div class="error-message" id="emailError">
+                        {{ error_email }}
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn-register">注册账号</button>
+            
+            <div class="form-footer">
+                已有账户? <a href="/polls/login/">立即登录</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // 显示错误消息
+        document.addEventListener('DOMContentLoaded', function() {
+            const errors = {
+                'userError': '{{ error_user }}',
+                'pwdError': '{{ error_pwd }}',
+                'emailError': '{{ error_email }}'
+            };
+            
+            for (const [id, message] of Object.entries(errors)) {
+                if (message) {
+                    const element = document.getElementById(id);
+                    element.style.display = 'block';
+                    element.textContent = message;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

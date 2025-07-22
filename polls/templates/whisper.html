@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>悄悄话 | 个人联系</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #e0f7fa 0%, #f9fbe7 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        /* 标题样式 */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        
+        .header h1 {
+            color: #4db6ac;
+            font-size: 2.8rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header::after {
+            content: "";
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(to right, #80deea, #4db6ac);
+            border-radius: 3px;
+        }
+        
+        /* 卡片容器 */
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        /* 卡片样式 */
+        .card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(77, 182, 172, 0.15);
+            transition: transform 0.4s, box-shadow 0.4s;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(77, 182, 172, 0.25);
+        }
+        
+        .card::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(77, 182, 172, 0.1) 0%, transparent 70%);
+            z-index: 0;
+        }
+        
+        .card-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* 图标样式 */
+        .icon-circle {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #80deea 0%, #4db6ac 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 32px;
+            box-shadow: 0 6px 12px rgba(77, 182, 172, 0.3);
+        }
+        
+        /* 联系信息样式 */
+        .contact-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 18px;
+            padding: 12px 15px;
+            background: rgba(224, 247, 250, 0.4);
+            border-radius: 12px;
+            transition: background 0.3s;
+        }
+        
+        .contact-item:hover {
+            background: rgba(224, 247, 250, 0.7);
+        }
+        
+        .contact-icon {
+            width: 42px;
+            height: 42px;
+            background: #4db6ac;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .contact-text {
+            color: #00695c;
+            font-size: 1.05rem;
+        }
+        
+        /* 名言样式 */
+        .quote-section {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 16px;
+            padding: 35px 30px;
+            margin-top: 20px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            position: relative;
+        }
+        
+        .quote-section::before {
+            content: ""❝"";
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            font-size: 5rem;
+            color: rgba(77, 182, 172, 0.2);
+            font-family: Georgia;
+        }
+        
+        .quote-item {
+            margin-bottom: 20px;
+            padding-left: 30px;
+            position: relative;
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #37474f;
+        }
+        
+        .quote-item::before {
+            content: ""•"";
+            color: #4db6ac;
+            font-size: 2rem;
+            position: absolute;
+            left: 0;
+            top: -8px;
+        }
+        
+        .game-quote {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #4db6ac 0%, #00796b 100%);
+            border-radius: 12px;
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            box-shadow: 0 6px 16px rgba(0, 121, 107, 0.4);
+        }
+        
+        /* 装饰元素 */
+        .decoration {
+            position: absolute;
+            opacity: 0.15;
+            z-index: -1;
+        }
+        
+        .leaf-1 {
+            top: 10%;
+            right: 5%;
+            font-size: 8rem;
+            transform: rotate(25deg);
+            color: #00796b;
+        }
+        
+        .leaf-2 {
+            bottom: 15%;
+            left: 5%;
+            font-size: 6rem;
+            transform: rotate(-15deg);
+            color: #4db6ac;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .card-container {
+                grid-template-columns: 1fr;
+            }
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            .quote-item {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 装饰元素 -->
+    <i class="decoration leaf-1 fas fa-leaf"></i>
+    <i class="decoration leaf-2 fas fa-seedling"></i>
+    
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-feather-alt"></i> 联系作者</h1>
+        </div>
+        
+        <div class="card-container">
+            <!-- 联系方式卡片 -->
+            <div class="card">
+                <div class="card-content">
+                    <div class="icon-circle">
+                        <i class="fas fa-address-book"></i>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="contact-text">181-3204-9718</div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="contact-text">zipeiliu@qq.com</div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fab fa-qq"></i>
+                        </div>
+                        <div class="contact-text">67520637</div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-gamepad"></i>
+                        </div>
+                        <div class="contact-text">游戏我只玩第五人格</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 名言卡片 -->
+            <div class="card">
+                <div class="card-content">
+                    <div class="icon-circle">
+                        <i class="fas fa-quote-left"></i>
+                    </div>
+                    
+                    <div class="quote-section">
+                        <div class="quote-item">高度自律即绝对自由</div>
+                        <div class="quote-item">星空在前，路在脚下</div>
+                        <div class="quote-item">满怀希望就会所向披靡</div>
+                        <div class="quote-item">你所热爱的，就是你的生活</div>
+                        <div class="quote-item">努力决定下限，天赋决定上限</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 添加卡片悬停微动效
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width - 0.5;
+                const y = (e.clientY - rect.top) / rect.height - 0.5;
+                
+                card.style.transform = `perspective(1000px) rotateY(${x * 6}deg) rotateX(${y * -6}deg) translateY(-8px)`;
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateY(0) rotateX(0)';
+            });
+        });
+    </script>
+</body>
+</html>

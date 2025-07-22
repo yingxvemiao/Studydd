@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>提示信息</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;500;700&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            background-size: 400% 400%;
+            animation: gradientBG 12s ease infinite;
+        }
+        @keyframes gradientBG {
+            0% {background-position: 0% 50%}
+            50% {background-position: 100% 50%}
+            100% {background-position: 0% 50%}
+        }
+        .prompt-container {
+            width: 500px;
+            padding: 40px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .prompt-icon {
+            font-size: 60px;
+            margin-bottom: 25px;
+        }
+        .success { color: #4CAF50; }
+        .error { color: #F44336; }
+        .warning { color: #FF9800; }
+        .info { color: #2196F3; }
+        .prompt-message {
+            font-size: 20px;
+            margin-bottom: 30px;
+            color: #333;
+            line-height: 1.6;
+        }
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 25px;
+            background: linear-gradient(to right, #6e8efb, #a777e3);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(110, 142, 251, 0.4);
+        }
+        .btn-back:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(110, 142, 251, 0.6);
+        }
+        .btn-back i {
+            margin-right: 8px;
+        }
+        .action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 40px;
+            background: linear-gradient(to right, #00b09b, #96c93d);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 176, 155, 0.4);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 176, 155, 0.6);
+        }
+        /* 右侧箭头样式 (纯CSS实现) */
+        .arrow-right {
+            width: 20px;
+            height: 20px;
+            margin-left: 10px;
+            position: relative;
+        }
+
+        .arrow-right::before,
+        .arrow-right::after {
+            content: '';
+            position: absolute;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .arrow-right::before {
+            width: 14px;
+            height: 2px;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+        }
+
+        .arrow-right::after {
+            width: 8px;
+            height: 8px;
+            border-top: 2px solid white;
+            border-right: 2px solid white;
+            top: 50%;
+            right: 1px;
+            transform: translateY(-50%) rotate(45deg);
+        }
+
+        /* 悬停动画效果 */
+        .action-btn:hover .arrow-right::before {
+            width: 18px;
+            left: -2px;
+        }
+
+        .action-btn:hover .arrow-right::after {
+            right: -3px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <div class="prompt-container">
+        <div class="prompt-icon {{ icon_class }}">
+            <i class="{{ icon }}"></i>
+        </div>
+        <div class="prompt-message">
+            {{ message }}
+        </div>
+        <button onclick="location.href='/polls/login/'" class="btn-back">
+            <i class="fas fa-arrow-right"></i> 立即登录
+        </button>
+    </div>
+</body>
+</html>

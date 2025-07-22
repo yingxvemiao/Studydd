@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>推荐网课 - 学习社区</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-bg: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            --card-bg: rgba(255, 255, 255, 0.97);
+            --accent-color: #4361ee;
+            --success-color: #43cea2;
+        }
+        
+        body {
+            background: var(--primary-bg);
+            min-height: 100vh;
+            padding: 20px;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background-attachment: fixed;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .form-container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .form-header h2 {
+            color: var(--accent-color);
+            font-weight: 700;
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+        }
+        
+        .form-header p {
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 8px;
+            font-size: 1.05rem;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 10px;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        .btn-submit {
+            background: linear-gradient(135deg, var(--accent-color), #3a56d4);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 14px 30px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            width: 100%;
+            margin-top: 20px;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(67, 97, 238, 0.4);
+        }
+        
+        .btn-back {
+            background: #e9ecef;
+            color: #495057;
+            border: none;
+            border-radius: 30px;
+            padding: 14px 30px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            width: 100%;
+            margin-top: 15px;
+            transition: all 0.3s;
+        }
+        
+        .btn-back:hover {
+            background: #dee2e6;
+        }
+        
+        .form-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #adb5bd;
+            font-size: 1.2rem;
+        }
+        
+        .input-group {
+            position: relative;
+        }
+        
+        .footer {
+            text-align: center;
+            color: rgba(255,255,255,0.85);
+            padding: 30px 0 20px;
+            font-size: 1rem;
+            font-weight: 300;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .form-container {
+                margin: 30px auto;
+                padding: 20px;
+            }
+            
+            .form-header h2 {
+                font-size: 1.8rem;
+            }
+            
+            .btn-submit, .btn-back {
+                padding: 12px 20px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <div class="form-header">
+                <h2><i class="fas fa-book-open me-2"></i>推荐优质网课</h2>
+                <p>分享你发现的好课程，帮助更多人学习成长</p>
+            </div>
+            
+            <form id="courseForm" onsubmit="submitCourse(event)">
+                <div class="mb-4">
+                    <label class="form-label">网课名称</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="courseName" placeholder="请输入完整的网课名称" required>
+                        <span class="form-icon"><i class="fas fa-book"></i></span>
+                    </div>
+                    <div class="form-text">请尽量提供完整的课程名称，包括平台和讲师信息</div>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="form-label">网课链接</label>
+                    <div class="input-group">
+                        <input type="url" class="form-control" id="courseUrl" placeholder="https://example.com/course" required>
+                        <span class="form-icon"><i class="fas fa-link"></i></span>
+                    </div>
+                    <div class="form-text">请确保链接有效且可直接访问</div>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="form-label">课程分类</label>
+                    <select class="form-select" id="courseCategory">
+                        <option value="technology">编程与技术</option>
+                        <option value="design">设计与创意</option>
+                        <option value="business">商业与金融</option>
+                        <option value="language">语言学习</option>
+                        <option value="science">科学</option>
+                        <option value="personal">个人发展</option>
+                        <option value="other">其他</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn btn-submit">
+                    <i class="fas fa-paper-plane me-2"></i>提交推荐
+                </button>
+                
+                <button type="button" class="btn btn-back" onclick="location.href='course_share.html'">
+                    <i class="fas fa-arrow-left me-2"></i>返回列表
+                </button>
+            </form>
+        </div>
+        
+        <div class="footer">
+            <p>© 2025 学习社区 · 优质网课推荐平台</p>
+        </div>
+    </div>
+    
+    <script>
+        function submitCourse(event) {
+            event.preventDefault();
+            
+            // 获取表单数据
+            const courseName = document.getElementById('courseName').value;
+            const courseUrl = document.getElementById('courseUrl').value;
+            const courseCategory = document.getElementById('courseCategory').value;
+            
+            // 生成随机ID（6位数字）
+            const courseId = Math.floor(100000 + Math.random() * 900000);
+            
+            // 创建课程对象
+            const newCourse = {
+                les_id: courseId,
+                les_name: courseName,
+                les_str: courseUrl,
+                les_score: 0, // 初始点赞数为0
+                category: courseCategory,
+                timestamp: new Date().toISOString()
+            };
+            
+            // 在实际应用中，这里应该发送数据到后端API
+            // 示例：使用localStorage模拟数据存储
+            let courses = JSON.parse(localStorage.getItem('courses')) || [];
+            courses.push(newCourse);
+            localStorage.setItem('courses', JSON.stringify(courses));
+            
+            // 提示用户
+            alert('课程推荐已提交！感谢您的分享！');
+            
+            // 跳转回课程分享页面
+            window.location.href = 'course_share.html';
+        }
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学习社区</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            background-size: 400% 400%;
+            animation: gradientBG 12s ease infinite;
+            padding: 20px;
+            position: relative;
+        }
+        
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* 顶部用户控制栏 */
+        .user-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 1000;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 8px 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        
+        .username {
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        
+        .logout-btn, .delete-account-btn {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.9);
+            color: #6e8efb;
+        }
+        
+        .logout-btn:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+        
+        .delete-account-btn {
+            background: rgba(255, 107, 107, 0.9);
+            color: white;
+        }
+        
+        .delete-account-btn:hover {
+            background: #ff5252;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+        
+        .confirmation-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        
+        .modal-content h3 {
+            color: #ff6b6b;
+            margin-bottom: 15px;
+        }
+        
+        .modal-content p {
+            color: #4a5568;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .modal-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s;
+        }
+        
+        .confirm-delete {
+            background: #ff6b6b;
+            color: white;
+        }
+        
+        .confirm-delete:hover {
+            background: #ff5252;
+        }
+        
+        .cancel-delete {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+        
+        .cancel-delete:hover {
+            background: #cbd5e0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 80px 20px 30px; /* 增加顶部内边距为控制栏腾出空间 */
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .section-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+        }
+        
+        .section-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            text-decoration: none;
+            color: #333;
+            display: block;
+            height: 100%;
+        }
+        
+        .section-card:hover {
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+            border-color: rgba(110, 142, 251, 0.6);
+        }
+        
+        .card-content {
+            padding: 30px 20px;
+            text-align: center;
+        }
+        
+        .icon-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: white;
+            font-size: 32px;
+            box-shadow: 0 5px 15px rgba(110, 142, 251, 0.4);
+        }
+        
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #4a5568;
+        }
+        
+        .card-desc {
+            font-size: 0.95rem;
+            color: #718096;
+            line-height: 1.5;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+            .section-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .user-controls {
+                flex-direction: column;
+                align-items: flex-end;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .user-controls {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-bottom: 20px;
+                justify-content: flex-end;
+            }
+            
+            .container {
+                padding-top: 40px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .section-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .user-info {
+                padding: 6px 12px;
+            }
+            
+            .username {
+                font-size: 1rem;
+            }
+            
+            .logout-btn, .delete-account-btn {
+                padding: 6px 12px;
+                font-size: 0.85rem;
+            }
+        }
+        
+        /* 第一行卡片特殊样式 */
+        .section-card:nth-child(-n+4) {
+            background: linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%);
+        }
+        
+        .section-card:nth-child(-n+4) .icon-circle {
+            background: linear-gradient(135deg, #43cea2, #185a9d);
+        }
+        
+        /* 第二行卡片特殊样式 */
+        .section-card:nth-child(n+5) {
+            background: linear-gradient(135deg, #ffffff 0%, #fff8f0 100%);
+        }
+        
+        .section-card:nth-child(n+5) .icon-circle {
+            background: linear-gradient(135deg, #ff6b6b, #ffa36c);
+        }
+    </style>
+</head>
+<body>
+    <!-- 用户控制区域 -->
+    <div class="user-controls">
+        <div class="user-info">
+            <div class="user-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <span class="username">{{username}}</span>
+        </div>
+        <button class="logout-btn" onclick="location.href='/polls/logout/'">
+            <i class="fas fa-sign-out-alt"></i> 退出
+        </button>
+        <button class="delete-account-btn" onclick="location.href='/polls/logout_confirm/'">
+            <i class="fas fa-trash-alt"></i> 注销
+        </button>
+    </div>
+    
+    <!-- 注销账号确认弹窗 -->
+    <div class="confirmation-modal" id="deleteConfirmation">
+        <div class="modal-content">
+            <h3><i class="fas fa-exclamation-triangle"></i> 确认注销账号</h3>
+            <p>您确定要永久删除您的账号吗？此操作将删除所有个人数据和学习记录，且无法恢复。</p>
+            <div class="modal-buttons">
+                <button class="modal-btn cancel-delete" onclick="hideDeleteConfirmation()">取消</button>
+                <button class="modal-btn confirm-delete" onclick="deleteAccount()">确认注销</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="header">
+            {% comment %} <h1>学习搭子dd</h1> {% endcomment %}
+            {% comment %} <p>探索我们的特色功能分区，开启高效学习之旅</p> {% endcomment %}
+        </div>
+        
+        <div class="section-grid">
+            <!-- 卡片内容保持不变 -->
+            <!-- 第一行：学霸榜，获取新身份，学习风格测评，网课分享 -->
+            <a href="/polls/top_students/" class="section-card">
+                <div class="card-content">
+                    <div class="icon-circle">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <h3 class="card-title">学霸榜</h3>
+                    <p class="card-desc">查看成绩优异的同学</p>
+                </div>
+            </a>
+        
+            <a href="/polls/learning_style/" class="section-card">
+                <div class="card-content">
+                    <div class="icon-circle">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3 class="card-title">学习风格测评</h3>
+                    <p class="card-desc">方便其他朋友了解你的学习偏好</p>
+                </div>
+            </a>
+
+            <a href="/polls/study_locations/" class="section-card">
+                <div class="card-content">
+                    <div class="icon-circle">
+                        <i class="fas fa-map-marker-alt"></i> <!-- 地图标记图标 -->
+                    </div>
+                    <h3 class="card-title">学习地点</h3>
+                    <p class="card-desc">设置常去自习的位置</p>
+                </div>
+            </a>
+            
+            <a href="/polls/course_share/" class="section-card">
+                <div class="card-content">
+                    <div class="icon-circle">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <h3 class="card-title">网课分享</h3>
+                    <p class="card-desc">发现优质在线课程资源</p>
+                </div>
+            </a>
+            
+            <!-- 第二行：学习搭子dd，悄悄话，公聊区，好友区 -->
+            <a href="/polls/study_partner/" class="section-card">
+                <div class="card-content">
+                    <div class="icon-circle">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <h3 class="card-title">学习搭子dd</h3>
+                    <p class="card-desc">寻找学习伙伴，共同进步互相督促</p>
+                </div>
+            </a>
+
+            <a href="/polls/friends_zone/" class="section-card">
+                <div class="card-content">
+                    <div class="icon-circle">
+                        <i class="fas fa-user-friends"></i>
+                    </div>
+                    <h3 class="card-title">好友区</h3>
+                    <p class="card-desc">管理学习好友，建立学习社交网络</p>
+                </div>
+            </a>
+
+            <a href="/polls/get_card/" class="section-card">
+                <div class="card-content">
+                    <div class="icon-circle">
+                        <i class="fas fa-gift"></i>
+                    </div>
+                    <h3 class="card-title">积分盲盒</h3>
+                    <p class="card-desc">搏一搏，单车变摩托！</p>
+                </div>
+            </a>
+            
+            <a href="/polls/whisper/" class="section-card">
+                <div class="card-content">
+                    <div class="icon-circle">
+                        <i class="fas fa-phone-alt"></i>
+                    </div>
+                    <h3 class="card-title">联系作者</h3>
+                    <p class="card-desc">我们期待您宝贵的改善建议</p>
+                </div>
+            </a>
+            
+        </div>
+    </div>
+    
+    <script>
+        // 显示注销账号确认弹窗
+        function showDeleteConfirmation() {
+            document.getElementById('deleteConfirmation').style.display = 'flex';
+        }
+        
+        // 隐藏注销账号确认弹窗
+        function hideDeleteConfirmation() {
+            document.getElementById('deleteConfirmation').style.display = 'none';
+        }
+        
+        // 模拟注销账号操作
+        function deleteAccount() {
+            alert('账号注销请求已提交，系统将处理您的请求');
+            hideDeleteConfirmation();
+            // 实际应用中这里应该调用后端API删除账号
+            // window.location.href = '/delete-account/';
+        }
+        
+        // 模拟退出登录操作
+        function logout() {
+            // 实际应用中这里应该调用后端API退出登录
+            alert('您已成功退出登录');
+            window.location.href = '/login/';
+        }
+        
+        // 点击弹窗外部关闭弹窗
+        window.onclick = function(event) {
+            const modal = document.getElementById('deleteConfirmation');
+            if (event.target === modal) {
+                hideDeleteConfirmation();
+            }
+        }
+    </script>
+</body>
+</html>
